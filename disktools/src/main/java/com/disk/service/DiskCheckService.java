@@ -32,23 +32,31 @@ public class DiskCheckService {
     @Scheduled(cron = "*/10 * *  * * * ")
     public void checkDisk(){
         Disk disk= DiskTools.calculate(DiskTools.getDiskInfo()) ;
-        HostInfo hostInfo = HostTools.getHostInfo();
         PartitionDisk[]  partitionDisks = disk.getPartitionDisks();
         HashMap<String, String> dangerDisk = new HashMap<>();
         String pattern = "#.00";
         for (int i=0;i<partitionDisks.length;i++){
             if(partitionDisks[i].getPercentRemain()<0.11){
-
+                dangerDisk.put(partitionDisks[i].getDisplayName(), buildDiskAlarmInfo(pattern,partitionDisks[i]));
             }
-            String value = "总量: "+ StringUtil.format(pattern,partitionDisks[i].getTotalSize().getSize())+partitionDisks[i].getTotalSize().getUnit()
-                    +" 剩余: "+StringUtil.format(pattern,partitionDisks[i].getRemainSize().getSize())+partitionDisks[i].getRemainSize().getUnit()
-                    +" 剩余百分比: "+partitionDisks[i].getPercentRemain();
-            dangerDisk.put(partitionDisks[i].getDisplayName(),value);
         }
+        HostInfo hostInfo = HostTools.getHostInfo();
         if (dangerDisk.isEmpty()){
-
+            AlarmInfo AlarmInfo = new AlarmInfo(hostInfo,dangerDisk);
+            System.out.println(AlarmInfo);
+        }else {
+            //发送告警
+            AlarmInfo AlarmInfo = new AlarmInfo(hostInfo,dangerDisk);
+            System.out.println(AlarmInfo);
         }
-        AlarmInfo AlarmInfo = new AlarmInfo(hostInfo,dangerDisk);
-        System.out.println(AlarmInfo);
+
+    }
+    private String buildDiskAlarmInfo(String pattern ,PartitionDisk partitionDisk) {
+        return
+        "总量: " + StringUtil.format(pattern, partitionDisk.getTotalSize().getSize())
+                + partitionDisk.getTotalSize().getUnit()
+                + " 剩余: " + StringUtil.format(pattern, partitionDisk.getRemainSize().getSize())
+                + partitionDisk.getRemainSize().getUnit()
+                + " 剩余百分比: " + StringUtil.format("#.0000", partitionDisk.getPercentRemain() * 100) + "%" ;
     }
 }
