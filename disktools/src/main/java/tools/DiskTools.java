@@ -19,10 +19,10 @@ import java.math.BigDecimal;
  **/
 public class DiskTools {
     public static void main(String[] args) {
-        System.out.println(calculate(driver()));
+        System.out.println();
     }
 
-    private static Disk calculate(Disk driver) {
+    public static Disk calculate(Disk driver) {
         driver.setAllSize(FormatFileSize(driver.getAll().doubleValue()));
         driver.setAllCurrentSize(FormatFileSize(driver.getCurrent().doubleValue()));
         return driver;
@@ -41,7 +41,7 @@ public class DiskTools {
     /**
      * 获取硬盘的每个盘符
      */
-    public static Disk driver(){
+    public static Disk getDiskInfo(){
         // 当前文件系统类
         FileSystemView fsv = FileSystemView.getFileSystemView();
         // 列出所有windows 磁盘
